@@ -1,8 +1,10 @@
 import { Request, Response } from "express";
-import { connection } from "../utils/solana";
 import { PublicKey } from "@solana/web3.js";
-import { NameRegistryState } from "@bonfida/spl-name-service";
 import { storage } from "../storage";
+
+// Import Solana utilities directly with absolute path
+const solanaUtils = require('../../server/utils/solana');
+const { connection, checkDomainAvailability, getDomainOwner, generateSimilarDomains, calculateDomainFee } = solanaUtils;
 
 export const domainController = {
   /**
@@ -21,30 +23,26 @@ export const domainController = {
       const domainName = name.toLowerCase().trim();
       
       try {
-        // Get the domain key from the domain name
-        const { pubkey } = await NameRegistryState.getNameAccountKey(
-          new TextEncoder().encode(`${domainName}.sol`),
-          undefined,
-          new PublicKey("58PwtjSDuFHuUkYjH9BYnnQKHfwo9reZhC2zMJv9JPkx") // SOL TLD Authority
-        );
+        // Check if the domain is available
+        const isAvailable = await checkDomainAvailability(domainName);
         
-        try {
-          // Try to retrieve the domain registry
-          const registry = await NameRegistryState.retrieve(connection, pubkey);
-          
-          // Domain exists, return owner information
-          return res.json({
-            status: "taken",
-            domain: domainName,
-            owner: registry.owner.toString(),
-            similarDomains: generateSimilarDomains(domainName)
-          });
-        } catch (error) {
-          // If we get here, domain doesn't exist (is available)
+        if (isAvailable) {
+          // Domain is available
           return res.json({
             status: "available",
             domain: domainName,
             fee: calculateDomainFee(domainName)
+          });
+        } else {
+          // Domain is taken, get the owner
+          const owner = await getDomainOwner(domainName);
+          
+          // Return owner information
+          return res.json({
+            status: "taken",
+            domain: domainName,
+            owner: owner ? owner.toString() : "Unknown",
+            similarDomains: generateSimilarDomains(domainName)
           });
         }
       } catch (error) {
@@ -204,31 +202,3 @@ export const domainController = {
     }
   }
 };
-
-/**
- * Generate similar domain suggestions
- */
-function generateSimilarDomains(domain: string): string[] {
-  const suggestions: string[] = [];
-  
-  // Add a number at the end
-  suggestions.push(`${domain}01.sol`);
-  
-  // Add a prefix
-  suggestions.push(`my${domain}.sol`);
-  suggestions.push(`the${domain}.sol`);
-  
-  // Add a suffix
-  suggestions.push(`${domain}-nft.sol`);
-  
-  return suggestions;
-}
-
-/**
- * Calculate domain registration fee
- */
-function calculateDomainFee(domain: string): number {
-  // In a real implementation, we would calculate based on domain length
-  // For this implementation, we'll return a fixed fee
-  return 0.1; // SOL
-}
