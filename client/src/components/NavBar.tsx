@@ -3,6 +3,7 @@ import { Link, useLocation } from "wouter";
 import { motion, AnimatePresence } from "framer-motion";
 import { useSolanaWallet } from "@/hooks/useSolanaWallet";
 import { useToast } from "@/hooks/useToast";
+import { FaXTwitter } from "react-icons/fa6";
 
 export default function NavBar() {
   const [location] = useLocation();
@@ -54,6 +55,16 @@ export default function NavBar() {
           <Link href="/dashboard" className={`transition-colors font-medium text-sm ${location === "/dashboard" ? "text-neutral-light" : "text-neutral hover:text-white"}`}>
             Dashboard
           </Link>
+          <a 
+            href="https://x.com/nym_sol" 
+            target="_blank" 
+            rel="noopener noreferrer" 
+            className="flex items-center gap-1 text-neutral hover:text-white transition-colors"
+            title="Follow us on X.com"
+          >
+            <FaXTwitter size={16} />
+            <span className="text-sm font-medium">@nym_sol</span>
+          </a>
         </div>
         
         <button 
@@ -92,6 +103,15 @@ export default function NavBar() {
               <Link href="/dashboard" className={`block py-3 px-4 rounded-lg transition-colors ${location === "/dashboard" ? "text-neutral-light bg-background-card" : "text-neutral hover:bg-background-card"}`}>
                 Dashboard
               </Link>
+              <a 
+                href="https://x.com/nym_sol" 
+                target="_blank" 
+                rel="noopener noreferrer" 
+                className="flex items-center gap-2 py-3 px-4 rounded-lg text-neutral hover:bg-background-card transition-colors"
+              >
+                <FaXTwitter size={16} />
+                <span>Follow @nym_sol</span>
+              </a>
             </div>
           </motion.div>
         )}
