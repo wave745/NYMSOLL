@@ -1,5 +1,5 @@
 [build]
-  command = "npm run build"
+  command = "npm run build && node netlify/build-hooks.js"
   publish = "dist"
   functions = "netlify/functions"
 
@@ -7,12 +7,25 @@
   command = "npm run dev"
   port = 5000
 
+# Redirect API requests to the serverless function
 [[redirects]]
   from = "/api/*"
   to = "/.netlify/functions/api/:splat"
   status = 200
 
+# This ensures that all routes are handled by the SPA
 [[redirects]]
   from = "/*"
   to = "/index.html"
   status = 200
+  force = true
+
+# Add security headers
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "DENY"
+    X-XSS-Protection = "1; mode=block"
+    Referrer-Policy = "no-referrer"
+    X-Content-Type-Options = "nosniff"
+    Content-Security-Policy = "default-src 'self'; connect-src 'self' https://api.mainnet-beta.solana.com; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:;"
