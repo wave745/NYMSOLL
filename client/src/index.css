@@ -1,0 +1,97 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: 252 94% 7%;
+  --foreground: 0 0% 98%;
+  --muted: 240 3.7% 15.9%;
+  --muted-foreground: 240 5% 64.9%;
+  --popover: 240 10% 3.9%;
+  --popover-foreground: 0 0% 98%;
+  --card: 249 31.5% 23%;
+  --card-foreground: 0 0% 98%;
+  --border: 240 3.7% 15.9%;
+  --input: 240 3.7% 15.9%;
+  --primary: 271 100% 64%;
+  --primary-foreground: 211 100% 99%;
+  --secondary: 158 95% 50%;
+  --secondary-foreground: 0 0% 98%;
+  --accent: 240 3.7% 15.9%;
+  --accent-foreground: 0 0% 98%;
+  --destructive: 0 84.2% 60.2%;
+  --destructive-foreground: 0 0% 98%;
+  --ring: 240 4.9% 83.9%;
+  --radius: 0.5rem;
+
+  --background-lighter: 252 15% 15%;
+  --background-card: 250 22% 24%;
+  --neutral: 245 10% 46%;
+  --neutral-light: 240 5% 96%;
+  --neutral-dark: 245 13% 36%;
+  --success: 158 95% 50%;
+  --error: 0 99% 64%;
+  --warning: 38 100% 50%;
+  --chart-1: 270 100% 64%;
+  --chart-2: 158 95% 50%;
+  --chart-3: 38 100% 50%;
+  --chart-4: 0 99% 64%;
+  --chart-5: 217 100% 60%;
+  --sidebar-background: var(--background);
+  --sidebar-foreground: var(--foreground);
+  --sidebar-primary: var(--primary);
+  --sidebar-primary-foreground: var(--primary-foreground);
+  --sidebar-accent: var(--accent);
+  --sidebar-accent-foreground: var(--accent-foreground);
+  --sidebar-border: var(--border);
+  --sidebar-ring: var(--ring);
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply font-sans antialiased bg-background text-foreground;
+  }
+}
+
+@layer components {
+  .gradient-text {
+    @apply bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent;
+  }
+
+  .gradient-border {
+    @apply relative rounded-lg;
+    position: relative;
+  }
+
+  .gradient-border::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: 0.5rem;
+    padding: 1px;
+    background: linear-gradient(45deg, hsl(var(--primary)), hsl(var(--secondary)));
+    -webkit-mask: 
+      linear-gradient(#fff 0 0) content-box, 
+      linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    pointer-events: none;
+  }
+
+  .card-shadow {
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+  }
+
+  .animate-slide-up {
+    animation: slideUp 0.5s ease forwards;
+  }
+
+  @keyframes slideUp {
+    from { transform: translateY(15px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+  }
+}
