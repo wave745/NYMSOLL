@@ -2,7 +2,8 @@ import { Connection, PublicKey, clusterApiUrl, Transaction } from "@solana/web3.
 import { NameRegistryState } from "@bonfida/spl-name-service";
 
 // Set up Solana connection (use mainnet-beta)
-const RPC_ENDPOINT = process.env.SOLANA_RPC_URL || clusterApiUrl('mainnet-beta');
+// Use import.meta.env for Vite environment variables
+const RPC_ENDPOINT = import.meta.env.VITE_SOLANA_RPC_URL || clusterApiUrl('mainnet-beta');
 export const connection = new Connection(RPC_ENDPOINT);
 
 /**

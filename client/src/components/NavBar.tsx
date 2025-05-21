@@ -45,20 +45,14 @@ export default function NavBar() {
         </div>
         
         <div className="hidden md:flex items-center space-x-6">
-          <Link href="/search">
-            <a className={`transition-colors font-medium text-sm ${location === "/search" || location === "/" ? "text-neutral-light" : "text-neutral hover:text-white"}`}>
-              Domain Search
-            </a>
+          <Link href="/search" className={`transition-colors font-medium text-sm ${location === "/search" || location === "/" ? "text-neutral-light" : "text-neutral hover:text-white"}`}>
+            Domain Search
           </Link>
-          <Link href="/vanity">
-            <a className={`transition-colors font-medium text-sm ${location === "/vanity" ? "text-neutral-light" : "text-neutral hover:text-white"}`}>
-              Vanity Wallet
-            </a>
+          <Link href="/vanity" className={`transition-colors font-medium text-sm ${location === "/vanity" ? "text-neutral-light" : "text-neutral hover:text-white"}`}>
+            Vanity Wallet
           </Link>
-          <Link href="/dashboard">
-            <a className={`transition-colors font-medium text-sm ${location === "/dashboard" ? "text-neutral-light" : "text-neutral hover:text-white"}`}>
-              Dashboard
-            </a>
+          <Link href="/dashboard" className={`transition-colors font-medium text-sm ${location === "/dashboard" ? "text-neutral-light" : "text-neutral hover:text-white"}`}>
+            Dashboard
           </Link>
         </div>
         
@@ -89,20 +83,14 @@ export default function NavBar() {
             className="md:hidden bg-background-lighter border-t border-neutral-dark/30"
           >
             <div className="px-4 py-2 space-y-2">
-              <Link href="/search">
-                <a className={`block py-3 px-4 rounded-lg transition-colors ${location === "/search" || location === "/" ? "text-neutral-light bg-background-card" : "text-neutral hover:bg-background-card"}`}>
-                  Domain Search
-                </a>
+              <Link href="/search" className={`block py-3 px-4 rounded-lg transition-colors ${location === "/search" || location === "/" ? "text-neutral-light bg-background-card" : "text-neutral hover:bg-background-card"}`}>
+                Domain Search
               </Link>
-              <Link href="/vanity">
-                <a className={`block py-3 px-4 rounded-lg transition-colors ${location === "/vanity" ? "text-neutral-light bg-background-card" : "text-neutral hover:bg-background-card"}`}>
-                  Vanity Wallet
-                </a>
+              <Link href="/vanity" className={`block py-3 px-4 rounded-lg transition-colors ${location === "/vanity" ? "text-neutral-light bg-background-card" : "text-neutral hover:bg-background-card"}`}>
+                Vanity Wallet
               </Link>
-              <Link href="/dashboard">
-                <a className={`block py-3 px-4 rounded-lg transition-colors ${location === "/dashboard" ? "text-neutral-light bg-background-card" : "text-neutral hover:bg-background-card"}`}>
-                  Dashboard
-                </a>
+              <Link href="/dashboard" className={`block py-3 px-4 rounded-lg transition-colors ${location === "/dashboard" ? "text-neutral-light bg-background-card" : "text-neutral hover:bg-background-card"}`}>
+                Dashboard
               </Link>
             </div>
           </motion.div>
