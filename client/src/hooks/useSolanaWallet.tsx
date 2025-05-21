@@ -11,6 +11,8 @@ declare global {
       disconnect: () => Promise<void>;
       on: (event: string, callback: Function) => void;
       off: (event: string, callback: Function) => void;
+      publicKey?: PublicKey;
+      signTransaction?: (transaction: any) => Promise<any>;
     };
   }
 }

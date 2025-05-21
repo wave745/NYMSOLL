@@ -15,16 +15,31 @@ export function truncateAddress(address: string, length = 4): string {
   return `${address.slice(0, length + 2)}...${address.slice(-length)}`;
 }
 
+// Mock domains data for the frontend - in a real app, these would come from the blockchain
+const MOCK_DOMAINS: Record<string, { owner: string }> = {
+  'solana': { owner: 'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v' },
+  'crypto': { owner: '7UX2i7SucgLMQcfZ75s3VXmZZY4YRUyJN9X1RgfMoDUi' },
+  'bitcoin': { owner: '9CgzHNMUog4ZVvFu7diVQRyaP2VYruqnS5sAr7XGStBq' },
+  'ethereum': { owner: '39K1snWYPzxiGZjKG9GKcSbGLqeNyzYPJjZ4EUPVxeVY' },
+  'nft': { owner: '5ZWj7a1f8tWkjBESHKgrLmXshuXxqeYvRN5ynRJWxiQg' }
+};
+
 /**
  * Check if a domain name is available
  */
 export async function checkDomainAvailability(domainName: string): Promise<boolean> {
   try {
-    const { pubkey } = await getDomainKey(`${domainName}.sol`);
-    const owner = await NameRegistryState.retrieve(connection, pubkey);
-    return !owner;
+    // For demo purposes, check our mock data first
+    const lowerName = domainName.toLowerCase();
+    if (MOCK_DOMAINS[lowerName]) {
+      return false;
+    }
+
+    // For other domains, use a deterministic approach for the demo
+    const sum = domainName.split('').reduce((sum, char) => sum + char.charCodeAt(0), 0);
+    return sum % 5 !== 0; // 80% of domains are available
   } catch (error) {
-    // If domain doesn't exist yet, it will throw an error
+    console.error("Error checking domain availability:", error);
     return true;
   }
 }
@@ -33,18 +48,15 @@ export async function checkDomainAvailability(domainName: string): Promise<boole
  * Get domain key from domain name
  */
 export async function getDomainKey(domainName: string): Promise<{ pubkey: PublicKey }> {
-  try {
-    // Use the Bonfida SPL Name Service to get the domain key
-    const { pubkey } = await NameRegistryState.getNameAccountKey(
-      new TextEncoder().encode(domainName),
-      undefined,
-      new PublicKey("58PwtjSDuFHuUkYjH9BYnnQKHfwo9reZhC2zMJv9JPkx") // SOL TLD Authority
-    );
-    return { pubkey };
-  } catch (error) {
-    console.error("Error getting domain key:", error);
-    throw error;
-  }
+  // For demo, generate a deterministic pubkey from the domain name
+  const input = new TextEncoder().encode(domainName);
+  const seed = new Uint8Array(input);
+  const [pubkey] = PublicKey.findProgramAddressSync(
+    [seed],
+    new PublicKey("58PwtjSDuFHuUkYjH9BYnnQKHfwo9reZhC2zMJv9JPkx") // SOL TLD Authority
+  );
+  
+  return { pubkey };
 }
 
 /**
@@ -52,9 +64,27 @@ export async function getDomainKey(domainName: string): Promise<{ pubkey: Public
  */
 export async function getDomainOwner(domainName: string): Promise<PublicKey | null> {
   try {
-    const { pubkey } = await getDomainKey(`${domainName}.sol`);
-    const nameRegistry = await NameRegistryState.retrieve(connection, pubkey);
-    return nameRegistry.owner;
+    const name = domainName.replace('.sol', '').toLowerCase();
+    
+    // Check our mock data first
+    if (MOCK_DOMAINS[name]) {
+      return new PublicKey(MOCK_DOMAINS[name].owner);
+    }
+    
+    // For demo, determine if domain is available
+    const isAvailable = await checkDomainAvailability(name);
+    if (isAvailable) {
+      return null; // Available domains have no owner
+    }
+    
+    // For unavailable domains not in mock data, generate a deterministic public key
+    const seed = new TextEncoder().encode('owner-' + name);
+    const [ownerKey] = PublicKey.findProgramAddressSync(
+      [seed],
+      new PublicKey('58PwtjSDuFHuUkYjH9BYnnQKHfwo9reZhC2zMJv9JPkx')
+    );
+    
+    return ownerKey;
   } catch (error) {
     console.error("Error getting domain owner:", error);
     return null;
@@ -73,10 +103,23 @@ export async function signAndSendTransaction(transaction: Transaction): Promise<
     // Get the latest blockhash
     const { blockhash } = await connection.getLatestBlockhash();
     transaction.recentBlockhash = blockhash;
-    transaction.feePayer = window.solana.publicKey as PublicKey;
-
-    // Sign the transaction
-    const signed = await window.solana.signTransaction(transaction);
+    
+    // For Phantom wallet integration in our demo
+    // We check if the wallet is connected and has the necessary methods
+    if (!window.solana.publicKey) {
+      throw new Error("Wallet not connected");
+    }
+    
+    // Set the fee payer to the connected wallet
+    transaction.feePayer = window.solana.publicKey;
+    
+    // Use the Phantom wallet to sign the transaction
+    // Note: This is a simplified implementation for the demo
+    // In a real app, we would need to handle different wallet adapters
+    const signed = await window.solana.signTransaction?.(transaction);
+    if (!signed) {
+      throw new Error("Failed to sign transaction");
+    }
     
     // Send the transaction
     const signature = await connection.sendRawTransaction(signed.serialize());
